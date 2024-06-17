@@ -37,11 +37,16 @@ int init_philosophers(t_data *data, t_philosopher **philo)
 		(*philo)[i].right_fork_bool = (*philo)[(i + 1) % data->number_of_philosophers].left_fork_bool;
 		(*philo)[i].last_meal= get_timestamp();
 		(*philo)[i].left_fork = malloc(sizeof(pthread_mutex_t));
-		pthread_mutex_init(philo[i]->left_fork, NULL);
+		printf("ahah numero %d\n", i);
+		pthread_mutex_init((*philo)[i].left_fork, NULL);
+		i++;
+	}
+	i = 0;
+	while (i < data->number_of_philosophers)
+	{
 		(*philo)[i].right_fork = ((*philo)[(i + 1) % data->number_of_philosophers].left_fork);
 		if (pthread_create(&((*philo)[i].thread), NULL, philo_routine, &((*philo)[i])) != 0)
 			return (-1);
-		printf("lolllllll\n");
 		i++;
 	}
 	data->start = 1;
@@ -56,7 +61,9 @@ void philo_eat(t_philosopher *philo)
 		if (philo->left_fork_bool == false)
 		{
 			philo->left_fork_bool = true;
+			pthread_mutex_lock(philo->data->print);
 			printf ("Le philosopher %d a pris la fourchette de gauche\n", philo->id);
+			pthread_mutex_unlock(philo->data->print);
 			pthread_mutex_unlock(philo->left_fork);
 			break ;
 		}
@@ -72,9 +79,13 @@ void philo_eat(t_philosopher *philo)
 		if (philo->right_fork_bool == false)
 		{
 			philo->right_fork_bool = true;
+			pthread_mutex_lock(philo->data->print);
 			printf ("Le philosopher %d a pris la fourchette de droite\n", philo->id);
+			pthread_mutex_unlock(philo->data->print);
 			pthread_mutex_unlock(philo->right_fork);
+			pthread_mutex_lock(philo->data->print);
 			printf("Le philo %d mange\n", philo->id);
+			pthread_mutex_unlock(philo->data->print);
 			philo->last_meal = get_timestamp();
 			philo->meals_eaten++;
 			usleep(philo->data->time_to_sleep * 1000);
@@ -95,10 +106,13 @@ void philo_eat(t_philosopher *philo)
 }
 
 void	philo_sleep(t_philosopher *philo)
-{	
+{	pthread_mutex_lock(philo->data->print);
 	printf("le philo %d dort...\n", philo->id);
+	pthread_mutex_unlock(philo->data->print);
 	usleep(philo->data->time_to_sleep);
+	pthread_mutex_lock(philo->data->print);
 	printf("le philo %d pense...\n", philo->id);
+	pthread_mutex_unlock(philo->data->print);
 }
 
 void	*philo_routine(void *arg)
@@ -124,12 +138,11 @@ int	main(int argc, char **argv)
 {
 	t_data 	data;
 	t_philosopher *philo;
-	int			i;
-	
-	i = 0;
+
 	if (argc < 5 || argc > 6)
 		return(printf("error: invalid argument : (number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_meals])\n"), -1);
 	//--------------------stock entrees dans la structure des parametres
+	data.print = malloc(sizeof(pthread_mutex_t));
 	data.start = 0;
 	data.number_of_philosophers = atoi(argv[1]);
 	data.time_to_die = atol(argv[2]);
@@ -141,7 +154,30 @@ int	main(int argc, char **argv)
 		data.number_of_meals = -1;
 	//-------------------
 	init_philosophers(&data, &philo);
-	if (!philo)
-		return (-1);
+	int i = 0;
+	while (1)
+	{
+		while (i < data.number_of_philosophers)
+		{
+			//printf ("nb repas = %d", data.number_of_meals);
+			if (philo[i].meals_eaten >= data.number_of_meals)
+			{
+				printf("Tous les repas ont ete manges!\n");
+				i = -1;
+				break ;
+			}
+			else if (get_timestamp() - philo[i].last_meal > philo->data->time_to_die)
+			{
+				pthread_mutex_lock(data.print);
+				printf("le philo %d est mort\n", philo[i].id);
+				i = -1;
+				break ;
+			}
+			i++;
+		}
+		if (i == -1)
+			break ;
+		i = 0;
+	}
 	
 }

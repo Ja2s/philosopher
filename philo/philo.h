@@ -25,6 +25,7 @@ typedef struct s_data
     long				time_to_sleep;
     int					number_of_meals;
 	int					start;
+	pthread_mutex_t		*print;
 }						t_data;
 
 typedef struct s_philosopher
@@ -37,6 +38,7 @@ typedef struct s_philosopher
 	bool				right_fork_bool;
     long				last_meal;
     int					meals_eaten;
+    int                 *start;
     t_data				*data;
 }						t_philosopher;
 
