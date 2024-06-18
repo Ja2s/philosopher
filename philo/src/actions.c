@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/18 15:31:43 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/18 15:43:30 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ void	philo_eat(t_philosopher *philo)
 		if (philo->right_fork_bool == false)
 		{
 			philo->right_fork_bool = true;
-			write_status(philo, "has taken a fork");
+			write_status(philo, "has taken a fork \U0001F374");
 			pthread_mutex_unlock(philo->right_fork);
-			write_status(philo, "eating");
+			write_status(philo, "eating \U0001F355");
 			eating(philo);
 			break ;
 		}
@@ -69,9 +69,9 @@ void	philo_eat(t_philosopher *philo)
 
 void	philo_sleep(t_philosopher *philo)
 {
-	write_status(philo, "sleeping");
+	write_status(philo, "sleeping \U0001F4A4");
 	usleep(philo->data->time_to_sleep * 1000);
-	write_status(philo, "thinking");
+	write_status(philo, "thinking \U0001F4AD");
 }
 
 void	*philo_routine(void *arg)
