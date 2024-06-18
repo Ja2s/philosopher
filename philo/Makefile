@@ -6,7 +6,7 @@
 #    By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/30 16:20:16 by jgavairo          #+#    #+#              #
-#    Updated: 2024/06/17 15:33:26 by jgavairo         ###   ########.fr        #
+#    Updated: 2024/06/18 15:28:30 by jgavairo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,11 @@ NAME = philo
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-SRCS = philo.c utils.c
+PATH_SRC = src/
+SRCS =	$(PATH_SRC)philo.c \
+		$(PATH_SRC)utils.c \
+		$(PATH_SRC)init.c \
+		$(PATH_SRC)actions.c 
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
