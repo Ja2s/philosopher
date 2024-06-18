@@ -37,7 +37,6 @@ int init_philosophers(t_data *data, t_philosopher **philo)
 		(*philo)[i].right_fork_bool = (*philo)[(i + 1) % data->number_of_philosophers].left_fork_bool;
 		(*philo)[i].last_meal= get_timestamp();
 		(*philo)[i].left_fork = malloc(sizeof(pthread_mutex_t));
-		printf("ahah numero %d\n", i);
 		pthread_mutex_init((*philo)[i].left_fork, NULL);
 		i++;
 	}
@@ -61,9 +60,6 @@ void philo_eat(t_philosopher *philo)
 		if (philo->left_fork_bool == false)
 		{
 			philo->left_fork_bool = true;
-			pthread_mutex_lock(philo->data->print);
-			printf ("Le philosopher %d a pris la fourchette de gauche\n", philo->id);
-			pthread_mutex_unlock(philo->data->print);
 			pthread_mutex_unlock(philo->left_fork);
 			break ;
 		}
@@ -80,7 +76,7 @@ void philo_eat(t_philosopher *philo)
 		{
 			philo->right_fork_bool = true;
 			pthread_mutex_lock(philo->data->print);
-			printf ("Le philosopher %d a pris la fourchette de droite\n", philo->id);
+			printf ("Le philosopher %d a pris les fourchettes\n", philo->id);
 			pthread_mutex_unlock(philo->data->print);
 			pthread_mutex_unlock(philo->right_fork);
 			pthread_mutex_lock(philo->data->print);
@@ -109,7 +105,7 @@ void	philo_sleep(t_philosopher *philo)
 {	pthread_mutex_lock(philo->data->print);
 	printf("le philo %d dort...\n", philo->id);
 	pthread_mutex_unlock(philo->data->print);
-	usleep(philo->data->time_to_sleep);
+	usleep(philo->data->time_to_sleep * 1000);
 	pthread_mutex_lock(philo->data->print);
 	printf("le philo %d pense...\n", philo->id);
 	pthread_mutex_unlock(philo->data->print);
@@ -124,6 +120,8 @@ void	*philo_routine(void *arg)
 		if (philo->data->start == 1)
 			break ;
 	}
+	if (philo->id % 2 == 0)
+		usleep(philo->data->time_to_eat * 1000);
 	while (1)
 	{
 		printf("Le philosopher %d essaie de manger...\n", philo->id);
@@ -160,9 +158,10 @@ int	main(int argc, char **argv)
 		while (i < data.number_of_philosophers)
 		{
 			//printf ("nb repas = %d", data.number_of_meals);
-			if (philo[i].meals_eaten >= data.number_of_meals)
+			if (data.number_of_meals != -1 && philo[i].meals_eaten >= data.number_of_meals)
 			{
-				printf("Tous les repas ont ete manges!\n");
+				pthread_mutex_lock(data.print);
+				printf("Tous les repas ont ete manges par le philo %d !\n", philo[i].id);
 				i = -1;
 				break ;
 			}
@@ -178,6 +177,7 @@ int	main(int argc, char **argv)
 		if (i == -1)
 			break ;
 		i = 0;
+		usleep(100);
 	}
 	
 }
