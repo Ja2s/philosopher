@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:12 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/18 15:33:22 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/19 16:20:20 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,10 @@ typedef struct s_data
 	long				time_to_sleep;
 	int					number_of_meals;
 	int					start;
-	pthread_mutex_t		*print;
+	int					stop;
+	pthread_mutex_t		stop_mut;
+	pthread_mutex_t		print;
+	long				starting_time;
 }						t_data;
 
 typedef struct s_philosopher
@@ -44,10 +47,10 @@ typedef struct s_philosopher
 
 void	take_left_fork(t_philosopher *philo);
 void	eating(t_philosopher *philo);
-void	philo_eat(t_philosopher *philo);
-void	philo_sleep(t_philosopher *philo);
+int		philo_eat(t_philosopher *philo);
+int		philo_sleep(t_philosopher *philo);
 void	*philo_routine(void *arg);
-void	write_status(t_philosopher *philo, char *status);
+int		write_status(t_philosopher *philo, char *status);
 long	get_timestamp(void);
 int		check_nb_meals(t_data *data, t_philosopher *philo);
 int		check_death(t_philosopher *philo, t_data *data);

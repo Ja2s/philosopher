@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/18 15:43:30 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/19 16:17:44 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	eating(t_philosopher *philo)
 	pthread_mutex_unlock(philo->right_fork);
 }
 
-void	philo_eat(t_philosopher *philo)
+int	philo_eat(t_philosopher *philo)
 {
 	take_left_fork(philo);
 	while (1)
@@ -53,10 +53,14 @@ void	philo_eat(t_philosopher *philo)
 		if (philo->right_fork_bool == false)
 		{
 			philo->right_fork_bool = true;
-			write_status(philo, "has taken a fork \U0001F374");
+			if (write_status(philo, "has taken a fork \U0001F374") == -1)
+				return (-1);
 			pthread_mutex_unlock(philo->right_fork);
-			write_status(philo, "eating \U0001F355");
+			if (write_status(philo, "eating \U0001F355") == -1)
+				return (-1);
 			eating(philo);
+			if (philo->data->stop == 1)
+				return (-1);
 			break ;
 		}
 		else
@@ -65,13 +69,17 @@ void	philo_eat(t_philosopher *philo)
 			usleep(20);
 		}
 	}
+	return (0);
 }
 
-void	philo_sleep(t_philosopher *philo)
+int	philo_sleep(t_philosopher *philo)
 {
-	write_status(philo, "sleeping \U0001F4A4");
+	if (write_status(philo, "sleeping \U0001F4A4") == -1)
+		return (-1);
 	usleep(philo->data->time_to_sleep * 1000);
-	write_status(philo, "thinking \U0001F4AD");
+	if (write_status(philo, "thinking \U0001F4AD") == -1)
+		return (-1);
+	return (0);
 }
 
 void	*philo_routine(void *arg)
@@ -88,8 +96,14 @@ void	*philo_routine(void *arg)
 		usleep(philo->data->time_to_eat * 1000);
 	while (1)
 	{
-		philo_eat(philo);
-		philo_sleep(philo);
+		if (philo_eat(philo) == -1)
+			return (NULL);
+		if (philo->data->stop == 1)
+			return (NULL);
+		if (philo_sleep(philo) == -1)
+			return (NULL);
+		if (philo->data->stop == 1)
+			return (NULL);
 	}
 	return (NULL);
 }
