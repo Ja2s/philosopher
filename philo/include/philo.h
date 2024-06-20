@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:12 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/19 16:20:20 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/20 18:51:09 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ typedef struct s_data
 	int					stop;
 	pthread_mutex_t		stop_mut;
 	pthread_mutex_t		print;
+	pthread_mutex_t		meals;
+	pthread_mutex_t		start_mut;
 	long				starting_time;
 }						t_data;
 
@@ -45,7 +47,7 @@ typedef struct s_philosopher
 	t_data				*data;
 }						t_philosopher;
 
-void	take_left_fork(t_philosopher *philo);
+int		take_left_fork(t_philosopher *philo);
 void	eating(t_philosopher *philo);
 int		philo_eat(t_philosopher *philo);
 int		philo_sleep(t_philosopher *philo);
@@ -57,3 +59,4 @@ int		check_death(t_philosopher *philo, t_data *data);
 int		init_one_philo(t_philosopher **philo, t_data *data, int i);
 int		init_philosophers(t_data *data, t_philosopher **philo);
 int		data_init(int argc, char **argv, t_data *data);
+void	ft_clean(t_data *data, t_philosopher **philo);

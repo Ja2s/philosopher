@@ -6,13 +6,13 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/19 16:17:44 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/20 18:56:41 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
-void	take_left_fork(t_philosopher *philo)
+int	take_left_fork(t_philosopher *philo)
 {
 	while (1)
 	{
@@ -21,21 +21,31 @@ void	take_left_fork(t_philosopher *philo)
 		{
 			philo->left_fork_bool = true;
 			pthread_mutex_unlock(philo->left_fork);
-			break ;
+			return (0);
 		}
 		else
 		{
 			pthread_mutex_unlock(philo->left_fork);
 			usleep(20);
 		}
+		usleep(1000); //-------------------
 	}
 }
 
 void	eating(t_philosopher *philo)
 {
+	if ((get_timestamp() - philo->last_meal) > philo->data->time_to_die)
+	{
+		pthread_mutex_lock(&philo->data->stop_mut);
+		philo->data->stop = 1;
+		pthread_mutex_unlock(&philo->data->stop_mut);
+		return ;
+	}
 	philo->last_meal = get_timestamp();
+	pthread_mutex_lock(&philo->data->meals);
 	philo->meals_eaten++;
-	usleep(philo->data->time_to_sleep * 1000);
+	pthread_mutex_unlock(&philo->data->meals);
+	usleep(philo->data->time_to_eat * 1000);
 	pthread_mutex_lock(philo->left_fork);
 	philo->left_fork_bool = false;
 	pthread_mutex_unlock(philo->left_fork);
@@ -46,28 +56,41 @@ void	eating(t_philosopher *philo)
 
 int	philo_eat(t_philosopher *philo)
 {
-	take_left_fork(philo);
 	while (1)
 	{
-		pthread_mutex_lock(philo->right_fork);
-		if (philo->right_fork_bool == false)
+		if (get_timestamp() - philo->last_meal > philo->data->time_to_die)
 		{
-			philo->right_fork_bool = true;
-			if (write_status(philo, "has taken a fork \U0001F374") == -1)
-				return (-1);
-			pthread_mutex_unlock(philo->right_fork);
-			if (write_status(philo, "eating \U0001F355") == -1)
-				return (-1);
-			eating(philo);
-			if (philo->data->stop == 1)
-				return (-1);
-			break ;
+			pthread_mutex_lock(&philo->data->stop_mut);
+			philo->data->stop = 1;
+			pthread_mutex_unlock(&philo->data->stop_mut);
+			return (-1);
 		}
-		else
-		{
-			pthread_mutex_unlock(philo->right_fork);
-			usleep(20);
+		if (take_left_fork(philo) == 0)
+		{	
+			pthread_mutex_lock(philo->right_fork);
+			if (philo->right_fork_bool == false)
+			{
+				philo->right_fork_bool = true;
+				if (write_status(philo, "has taken a fork \U0001F374") == -1)
+					return (pthread_mutex_unlock(philo->right_fork), -1);
+				pthread_mutex_unlock(philo->right_fork);
+				if (write_status(philo, "eating \U0001F355") == -1)
+					return (-1);
+				eating(philo);
+				if (philo->data->stop == 1)
+					return (-1);
+				break ;
+			}
+			else
+			{
+				pthread_mutex_lock(philo->left_fork);
+				philo->left_fork_bool = false;
+				pthread_mutex_unlock(philo->left_fork);
+				pthread_mutex_unlock(philo->right_fork);
+				usleep(100);
+			}
 		}
+		usleep(1000); //-------------------
 	}
 	return (0);
 }
@@ -89,8 +112,14 @@ void	*philo_routine(void *arg)
 	philo = (t_philosopher *)arg;
 	while (1)
 	{
+		pthread_mutex_lock(&philo->data->start_mut);
 		if (philo->data->start == 1)
+		{
+			pthread_mutex_unlock(&philo->data->start_mut);
 			break ;
+		}
+		pthread_mutex_unlock(&philo->data->start_mut);
+		usleep(1000); //-------------------
 	}
 	if (philo->id % 2 == 0)
 		usleep(philo->data->time_to_eat * 1000);
@@ -104,6 +133,7 @@ void	*philo_routine(void *arg)
 			return (NULL);
 		if (philo->data->stop == 1)
 			return (NULL);
+		usleep(1000); //-------------------
 	}
 	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:14 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/19 17:41:18 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/20 18:41:18 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,20 @@ void	ft_clean(t_data *data, t_philosopher **philo)
 	while (i < data->number_of_philosophers)
 	{
 		pthread_join((*philo)[i].thread, NULL);
-		printf("Le philo %d est de retour !\n", i);
 		i++;
 	}
 	i = 0;
 	while(i < data->number_of_philosophers)
 	{
-		pthread_mutex_destroy((*philo)->left_fork);
-		//free((*philo)->left_fork);
-		//free((*philo)->right_fork);
+		if ((*philo)[i].left_fork)
+        {
+            pthread_mutex_destroy((*philo)[i].left_fork);
+            free((*philo)[i].left_fork);
+        }
 		i++;
 	}
-	//free(philo);
+	free(*philo);
+	*philo = NULL;
 }
 
 int	main(int argc, char **argv)
@@ -55,6 +57,7 @@ int	main(int argc, char **argv)
 		}
 		i = 0;
 		usleep(100);
+		usleep(1000); //-------------------
 	}
 	return (ft_clean(&data, &philo), 0);
 }
