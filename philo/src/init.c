@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:18:36 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/20 18:51:24 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/23 18:12:05 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,11 @@ int	data_init(int argc, char **argv, t_data *data)
 	if (argc < 5 || argc > 6)
 		return (-1);
 	pthread_mutex_init(&data->print, NULL);
+	pthread_mutex_init(&data->time_mut, NULL);
 	pthread_mutex_init(&data->stop_mut, NULL);
 	pthread_mutex_init(&data->start_mut, NULL);
 	pthread_mutex_init(&data->meals, NULL);
+	pthread_mutex_init(&data->eat_time_mut, NULL);
 	data->start = 0;
 	data->stop = 0;
 	data->number_of_philosophers = atoi(argv[1]);

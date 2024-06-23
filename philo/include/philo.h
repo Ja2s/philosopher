@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:12 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/20 18:51:09 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/23 18:11:51 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ typedef struct s_data
 	int					start;
 	int					stop;
 	pthread_mutex_t		stop_mut;
+	pthread_mutex_t		eat_time_mut;
+	pthread_mutex_t		time_mut;
 	pthread_mutex_t		print;
 	pthread_mutex_t		meals;
 	pthread_mutex_t		start_mut;
