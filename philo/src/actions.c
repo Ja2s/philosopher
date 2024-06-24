@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/23 18:19:38 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/24 16:07:36 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 
 int	take_left_fork(t_philosopher *philo)
 {
-	while (1)
-	{
+		//printf("philo %d essaie de prendre fourchette gauche\n", philo->id);
 		pthread_mutex_lock(philo->left_fork);
 		if (philo->left_fork_bool == false)
 		{
@@ -26,10 +25,10 @@ int	take_left_fork(t_philosopher *philo)
 		else
 		{
 			pthread_mutex_unlock(philo->left_fork);
+			return (-1);
 			usleep(20);
 		}
-		usleep(1000); //-------------------
-	}
+		//usleep(1000); //-------------------
 }
 
 void	eating(t_philosopher *philo)
@@ -57,7 +56,7 @@ void	eating(t_philosopher *philo)
 	philo->left_fork_bool = false;
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_lock(philo->right_fork);
-	philo->right_fork_bool = false;
+	*philo->right_fork_bool = false;
 	pthread_mutex_unlock(philo->right_fork);
 }
 
@@ -78,9 +77,10 @@ int	philo_eat(t_philosopher *philo)
 		if (take_left_fork(philo) == 0)
 		{	
 			pthread_mutex_lock(philo->right_fork);
-			if (philo->right_fork_bool == false)
+			//printf("id = %d LA\n", philo->id);
+			if (*(philo->right_fork_bool) == false)
 			{
-				philo->right_fork_bool = true;
+				*(philo->right_fork_bool) = true;
 				pthread_mutex_unlock(philo->right_fork);
 				if (write_status(philo, "has taken a fork \U0001F374") == -1)
 					return (-1);
@@ -102,7 +102,7 @@ int	philo_eat(t_philosopher *philo)
 				usleep(100);
 			}
 		}
-		usleep(1000); //-------------------
+		//usleep(1000); //-------------------
 	}
 	return (0);
 }
@@ -149,7 +149,7 @@ void	*philo_routine(void *arg)
 		if (philo->data->stop == 1)
 			return (pthread_mutex_unlock(&philo->data->stop_mut), NULL);
 		pthread_mutex_unlock(&philo->data->stop_mut);
-		usleep(1000); //-------------------
+		//usleep(1000); //-------------------
 	}
 	return (NULL);
 }

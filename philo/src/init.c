@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:18:36 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/23 18:12:05 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/24 14:38:38 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	init_one_philo(t_philosopher **philo, t_data *data, int i)
 	(*philo)[i].left_fork = malloc(sizeof(pthread_mutex_t));
 	if (pthread_mutex_init((*philo)[i].left_fork, NULL) != 0)
 		return (-1);
+	(*philo)[i].right_fork_bool = malloc(sizeof(bool));
 	return (0);
 }
 
@@ -45,14 +46,15 @@ int	init_philosophers(t_data *data, t_philosopher **philo)
 		(*philo)[i].right_fork = ((*philo)[(i + 1) % \
 		data->number_of_philosophers].left_fork);
 		pthread_mutex_lock((*philo)[i].right_fork);
-		(*philo)[i].right_fork_bool = (*philo)[(i + 1) % \
-		data->number_of_philosophers].left_fork_bool;
+		(*philo)[i].right_fork_bool = &((*philo)[(i + 1) % \
+		data->number_of_philosophers].left_fork_bool);
 		pthread_mutex_unlock((*philo)[i].right_fork);
 		i++;
 	}
 	i = 0;
-	while (i < data->number_of_philosophers)
+	while (i <	 data->number_of_philosophers)
 	{
+		//printf("i = %d & adress right fork bool = %p & left bool = %p\n", i, (*philo)[i].right_fork_bool, &(*philo)[i].left_fork_bool);
 		if (pthread_create(&((*philo)[i].thread), NULL, \
 		philo_routine, &((*philo)[i])) != 0)
 			return (ft_clean(data, philo), -1);

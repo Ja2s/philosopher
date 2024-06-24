@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:12 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/23 18:11:51 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/24 14:50:49 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct s_philosopher
 	pthread_mutex_t		*left_fork;
 	bool				left_fork_bool;
 	pthread_mutex_t		*right_fork;
-	bool				right_fork_bool;
+	bool				*right_fork_bool;
 	long				last_meal;
 	int					meals_eaten;
 	int					*start;
@@ -62,3 +62,4 @@ int		init_one_philo(t_philosopher **philo, t_data *data, int i);
 int		init_philosophers(t_data *data, t_philosopher **philo);
 int		data_init(int argc, char **argv, t_data *data);
 void	ft_clean(t_data *data, t_philosopher **philo);
+int		ft_usleep(t_data *data, long time);

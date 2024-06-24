@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:14 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/20 18:41:18 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/24 16:02:37 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	main(int argc, char **argv)
 		}
 		i = 0;
 		usleep(100);
-		usleep(1000); //-------------------
+		//usleep(1000); //-------------------
 	}
 	return (ft_clean(&data, &philo), 0);
 }
