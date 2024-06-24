@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/24 16:07:36 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/24 22:47:34 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int	take_left_fork(t_philosopher *philo)
 {
+	//check death
 		//printf("philo %d essaie de prendre fourchette gauche\n", philo->id);
 		pthread_mutex_lock(philo->left_fork);
 		if (philo->left_fork_bool == false)
@@ -26,7 +27,6 @@ int	take_left_fork(t_philosopher *philo)
 		{
 			pthread_mutex_unlock(philo->left_fork);
 			return (-1);
-			usleep(20);
 		}
 		//usleep(1000); //-------------------
 }
@@ -44,13 +44,13 @@ void	eating(t_philosopher *philo)
 		return ;
 	}
 	pthread_mutex_unlock(&philo->data->time_mut);
-	pthread_mutex_lock(&philo->data->meals);
-	philo->last_meal = get_timestamp();
-	philo->meals_eaten++;
-	pthread_mutex_unlock(&philo->data->meals);
 	pthread_mutex_lock(&philo->data->eat_time_mut);
 	time = (philo->data->time_to_eat * 1000);
 	pthread_mutex_unlock(&philo->data->eat_time_mut);
+	pthread_mutex_lock(&philo->data->meals);
+	philo->meals_eaten++;
+	philo->last_meal = get_timestamp();
+	pthread_mutex_unlock(&philo->data->meals);
 	usleep(time);
 	pthread_mutex_lock(philo->left_fork);
 	philo->left_fork_bool = false;
@@ -77,15 +77,16 @@ int	philo_eat(t_philosopher *philo)
 		if (take_left_fork(philo) == 0)
 		{	
 			pthread_mutex_lock(philo->right_fork);
-			//printf("id = %d LA\n", philo->id);
 			if (*(philo->right_fork_bool) == false)
 			{
 				*(philo->right_fork_bool) = true;
+				
 				pthread_mutex_unlock(philo->right_fork);
 				if (write_status(philo, "has taken a fork \U0001F374") == -1)
 					return (-1);
 				if (write_status(philo, "eating \U0001F355") == -1)
 					return (-1);
+				//printf("id = %d LA il a pris la fourchette de droite\n", philo->id);
 				eating(philo);
 				pthread_mutex_lock(&philo->data->stop_mut);
 				if (philo->data->stop == 1)
@@ -109,11 +110,31 @@ int	philo_eat(t_philosopher *philo)
 
 int	philo_sleep(t_philosopher *philo)
 {
+	pthread_mutex_lock(&philo->data->time_mut);
+	if (get_timestamp() - philo->last_meal > philo->data->time_to_die)
+	{
+		pthread_mutex_unlock(&philo->data->time_mut);
+		pthread_mutex_lock(&philo->data->stop_mut);
+		philo->data->stop = 1;
+		pthread_mutex_unlock(&philo->data->stop_mut);
+	}
+	pthread_mutex_unlock(&philo->data->time_mut);
 	if (write_status(philo, "sleeping \U0001F4A4") == -1)
 		return (-1);
 	usleep(philo->data->time_to_sleep * 1000);
+	pthread_mutex_lock(&philo->data->time_mut);
+	if (get_timestamp() - philo->last_meal > philo->data->time_to_die)
+	{
+		pthread_mutex_unlock(&philo->data->time_mut);
+		pthread_mutex_lock(&philo->data->stop_mut);
+		philo->data->stop = 1;
+		pthread_mutex_unlock(&philo->data->stop_mut);
+	}
+	pthread_mutex_unlock(&philo->data->time_mut);
 	if (write_status(philo, "thinking \U0001F4AD") == -1)
 		return (-1);
+	usleep(100);
+	//usleep(philo->data->time_to_die - (get_timestamp() - philo->last_meal) - 1000);
 	return (0);
 }
 
