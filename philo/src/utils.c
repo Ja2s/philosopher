@@ -6,55 +6,61 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:08 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/24 23:05:16 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/25 18:19:26 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
-int	ft_usleep(t_data *data, long time)
-{
-	long i;
-
-	i = get_timestamp();
-	while (1)
-	{
-		if ((long)(get_timestamp - i) >= time)
-			break;
-		pthread_mutex_lock(&data->stop_mut);
-		if (data->stop == 1)
-			return (pthread_mutex_unlock(&data->stop_mut), -1);
-		pthread_mutex_unlock(&data->stop_mut);
-		usleep(10);
-	}
-	return (0);
-}
-
-int	write_status(t_philosopher *philo, char *status)
+int		death_checker(t_philosopher *philo)
 {
 	pthread_mutex_lock(&philo->data->stop_mut);
 	if (philo->data->stop == 1)
 		return (pthread_mutex_unlock(&philo->data->stop_mut), -1);
 	pthread_mutex_unlock(&philo->data->stop_mut);
+	return (0);
+}
+
+void	ft_usleep(int time)
+{
+    long    start_time;
+    long    time_to_wait;
+
+    start_time = get_timestamp();
+    while ((get_timestamp() - start_time) < time)
+    {
+        time_to_wait = ((time - (get_timestamp() - start_time)) * 1000) / 2;
+        if (time_to_wait > 50)
+            usleep(50);
+        else
+            usleep(time_to_wait);
+    }
+}
+
+void	ft_usleep_check(t_philosopher *philo, int time)
+{
+    long    start_time;
+    long    time_to_wait;
+
+    start_time = get_timestamp();
+    while ((get_timestamp() - start_time) < time)
+    {
+		if (death_checker(philo) == -1)
+			break ;
+        time_to_wait = ((time - (get_timestamp() - start_time)) * 1000) / 2;
+        if (time_to_wait > 50)
+            usleep(50);
+        else
+            usleep(time_to_wait);
+    }
+}
+
+int	write_status(t_philosopher *philo, char *status)
+{
+	if (death_checker(philo) == -1)
+		return (-1);
+	pthread_mutex_lock(&philo->data->print);
 	pthread_mutex_lock(&philo->data->time_mut);
-	if (get_timestamp() - philo->last_meal > philo->data->time_to_die)
-	{
-		pthread_mutex_unlock(&philo->data->time_mut);
-		pthread_mutex_lock(&philo->data->stop_mut);
-		philo->data->stop = 1;
-		pthread_mutex_unlock(&philo->data->stop_mut);
-		return(pthread_mutex_unlock(&philo->data->time_mut), -1);
-	}
-	pthread_mutex_unlock(&philo->data->time_mut);
-	while (pthread_mutex_lock(&philo->data->print) != 0)
-	{
-		pthread_mutex_lock(&philo->data->stop_mut);
-		if (philo->data->stop == 1)
-			return (pthread_mutex_unlock(&philo->data->stop_mut), -1);
-		pthread_mutex_unlock(&philo->data->stop_mut);
-	}
-	pthread_mutex_lock(&philo->data->time_mut);
-	
 	pthread_mutex_lock(&philo->data->stop_mut);
 	if (philo->data->stop == 1)
 	{
@@ -64,8 +70,7 @@ int	write_status(t_philosopher *philo, char *status)
 		return (-1);
 	}
 	pthread_mutex_unlock(&philo->data->stop_mut);
-	printf ("| %ld | The philosopher %d %s\n", (get_timestamp() - philo->data->starting_time), philo->id, status);
-	
+	printf ("%ld %d %s\n", (get_timestamp() - philo->data->starting_time), philo->id, status);
 	pthread_mutex_unlock(&philo->data->time_mut);
 	pthread_mutex_unlock(&philo->data->print);
 	return (0);
@@ -84,19 +89,9 @@ int	check_nb_meals(t_data *data, t_philosopher *philo)
 	pthread_mutex_lock(&data->meals);
 	if (data->number_of_meals != -1 && \
 	philo->meals_eaten >= data->number_of_meals)
-	{
-		pthread_mutex_unlock(&data->meals);
-		pthread_mutex_lock(&data->stop_mut);
-		data->stop = 1;
-		pthread_mutex_unlock(&data->stop_mut);
-		usleep(100);
-		pthread_mutex_lock(&data->print);
-		pthread_mutex_lock(&data->time_mut);
-		printf("| %ld | The philosopher %d eats every meal! \U0001F389\n", (get_timestamp() - philo->data->starting_time), philo->id);
-		pthread_mutex_unlock(&data->time_mut);
-		pthread_mutex_unlock(&data->print);
-		return (-1);
-	}
+		data->max_meal = 1;
+	else
+		data->max_meal = 0;
 	pthread_mutex_unlock(&data->meals);
 	return (0);
 }
@@ -104,17 +99,16 @@ int	check_nb_meals(t_data *data, t_philosopher *philo)
 int	check_death(t_philosopher *philo, t_data *data)
 {
 	pthread_mutex_lock(&data->time_mut);
-	if (get_timestamp() - philo->last_meal > philo->data->time_to_die)
+	if (get_timestamp() - philo->last_meal >= philo->data->time_to_die)
 	{
 		pthread_mutex_unlock(&data->time_mut);
 		pthread_mutex_lock(&data->stop_mut);
 		data->stop = 1;
 		pthread_mutex_unlock(&data->stop_mut);
 		pthread_mutex_lock(&data->print);
-		usleep(1000);
-		pthread_mutex_lock(&data->time_mut);
-		printf("| %ld | The philosopher %d is dead \U0001F480\n",(get_timestamp() - philo->data->starting_time), philo->id);
-		pthread_mutex_unlock(&data->time_mut);
+		//pthread_mutex_lock(&data->time_mut);
+		printf("%ld %d died\n",(get_timestamp() - philo->data->starting_time), philo->id);
+		//pthread_mutex_unlock(&data->time_mut);
 		pthread_mutex_unlock(&data->print);
 		return (-1);
 	}
