@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:08 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/25 18:19:26 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/25 18:44:55 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,19 +59,12 @@ int	write_status(t_philosopher *philo, char *status)
 {
 	if (death_checker(philo) == -1)
 		return (-1);
-	pthread_mutex_lock(&philo->data->print);
-	pthread_mutex_lock(&philo->data->time_mut);
 	pthread_mutex_lock(&philo->data->stop_mut);
 	if (philo->data->stop == 1)
-	{
-		pthread_mutex_unlock(&philo->data->stop_mut);
-		pthread_mutex_unlock(&philo->data->time_mut);
-		pthread_mutex_unlock(&philo->data->print);
-		return (-1);
-	}
+		return (pthread_mutex_unlock(&philo->data->stop_mut), -1);
 	pthread_mutex_unlock(&philo->data->stop_mut);
+	pthread_mutex_lock(&philo->data->print);
 	printf ("%ld %d %s\n", (get_timestamp() - philo->data->starting_time), philo->id, status);
-	pthread_mutex_unlock(&philo->data->time_mut);
 	pthread_mutex_unlock(&philo->data->print);
 	return (0);
 }
@@ -106,9 +99,7 @@ int	check_death(t_philosopher *philo, t_data *data)
 		data->stop = 1;
 		pthread_mutex_unlock(&data->stop_mut);
 		pthread_mutex_lock(&data->print);
-		//pthread_mutex_lock(&data->time_mut);
 		printf("%ld %d died\n",(get_timestamp() - philo->data->starting_time), philo->id);
-		//pthread_mutex_unlock(&data->time_mut);
 		pthread_mutex_unlock(&data->print);
 		return (-1);
 	}

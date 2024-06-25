@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/25 18:19:57 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/25 18:39:35 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,17 +63,20 @@ int	philo_eat(t_philosopher *philo)
 			return (-1);
 
 		if (take_left_fork(philo) != 0)
+		{
+			usleep(7);
 			continue;
+		}
 
 		while (1)
 		{	
-			if (death_checker(philo) == -1)
-				return (-1);
+			// if (death_checker(philo) == -1)
+			// 	return (-1);
 			pthread_mutex_lock(philo->right_fork);
 			if (*(philo->right_fork_bool) == true)
 			{
 				pthread_mutex_unlock(philo->right_fork);
-				usleep(50);
+				usleep(7);
 				continue;
 			}
 			*(philo->right_fork_bool) = true;
