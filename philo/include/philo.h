@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:12 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/25 16:56:02 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/27 13:27:21 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ typedef struct s_philosopher
 }						t_philosopher;
 
 int		take_left_fork(t_philosopher *philo);
-void	eating(t_philosopher *philo);
+int		eating(t_philosopher *philo);
 int		philo_eat(t_philosopher *philo);
 int		philo_sleep(t_philosopher *philo);
 void	*philo_routine(void *arg);

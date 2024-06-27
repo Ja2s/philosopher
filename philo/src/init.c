@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:18:36 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/25 17:08:41 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/27 14:50:48 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ int	init_one_philo(t_philosopher **philo, t_data *data, int i)
 int	init_philosophers(t_data *data, t_philosopher **philo)
 {
 	int	i;
-	int last_meal;
 
 	i = 0;
 	(*philo) = malloc(sizeof(t_philosopher) * data->number_of_philosophers);
@@ -60,12 +59,6 @@ int	init_philosophers(t_data *data, t_philosopher **philo)
 		i++;
 	}
 	data->starting_time = get_timestamp();
-	last_meal = get_timestamp();
-	// while (i < data->number_of_philosophers)
-	// {
-	// 	(*philo)[i].last_meal = last_meal;
-	// 	i++;
-	// }
 	pthread_mutex_lock(&data->start_mut);
 	data->start = 1;
 	pthread_mutex_unlock(&data->start_mut);

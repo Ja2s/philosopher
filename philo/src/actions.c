@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/25 18:39:35 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/27 15:05:16 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,26 +33,37 @@ int	take_left_fork(t_philosopher *philo)
 	//usleep(1000); //-------------------
 }
 
-void	eating(t_philosopher *philo)
+int	eating(t_philosopher *philo)
 {
 	long	time;
 
 	if (death_checker(philo) == -1)
-		return ;
+		return (-1);
 	pthread_mutex_lock(&philo->data->eat_time_mut);
 	time = (philo->data->time_to_eat);
 	pthread_mutex_unlock(&philo->data->eat_time_mut);
-	pthread_mutex_lock(&philo->data->meals);
+	if (death_checker(philo) == -1)
+		return (-1);
+	//pthread_mutex_lock(&philo->data->meals);
+	pthread_mutex_lock(&philo->data->eat_time_mut);
 	philo->meals_eaten++;
 	philo->last_meal = get_timestamp();
-	pthread_mutex_unlock(&philo->data->meals);
+	pthread_mutex_unlock(&philo->data->eat_time_mut);
+	//pthread_mutex_unlock(&philo->data->meals);
+	if (death_checker(philo) == -1)
+		return (-1);
 	ft_usleep_check(philo, time);
+	if (death_checker(philo) == -1)
+		return (-1);
 	pthread_mutex_lock(philo->left_fork);
 	philo->left_fork_bool = false;
 	pthread_mutex_unlock(philo->left_fork);
+	if (death_checker(philo) == -1)
+		return (-1);
 	pthread_mutex_lock(philo->right_fork);
 	*philo->right_fork_bool = false;
 	pthread_mutex_unlock(philo->right_fork);
+	return (0);
 }
 
 int	philo_eat(t_philosopher *philo)
@@ -64,19 +75,21 @@ int	philo_eat(t_philosopher *philo)
 
 		if (take_left_fork(philo) != 0)
 		{
-			usleep(7);
+			if (death_checker(philo) == -1)
+				return (-1);
+			usleep(5);
 			continue;
 		}
 
 		while (1)
 		{	
-			// if (death_checker(philo) == -1)
-			// 	return (-1);
+			if (death_checker(philo) == -1)
+				return (-1);
 			pthread_mutex_lock(philo->right_fork);
 			if (*(philo->right_fork_bool) == true)
 			{
 				pthread_mutex_unlock(philo->right_fork);
-				usleep(7);
+				usleep(5);
 				continue;
 			}
 			*(philo->right_fork_bool) = true;
@@ -85,8 +98,7 @@ int	philo_eat(t_philosopher *philo)
 				return (-1);
 			if (write_status(philo, "is eating") == -1)
 				return (-1);
-			eating(philo);
-			if (death_checker(philo) == -1)
+			if (eating(philo) == -1)
 				return (-1);
 			return (0);
 		}
@@ -102,6 +114,7 @@ int	philo_sleep(t_philosopher *philo)
 	if (death_checker(philo) == -1)
 		return (-1);
 	ft_usleep_check(philo, philo->data->time_to_sleep);
+	//usleep(philo->data->time_to_sleep * 1000);
 	if (death_checker(philo) == -1)
 		return (-1);
 	if (write_status(philo, "is thinking") == -1)
@@ -122,13 +135,14 @@ void	*philo_routine(void *arg)
 		if (philo->data->start == 1)
 		{
 			pthread_mutex_unlock(&philo->data->start_mut);
+			philo->last_meal = get_timestamp();
 			break ;
 		}
 		pthread_mutex_unlock(&philo->data->start_mut);
-		ft_usleep(1);
+		//ft_usleep(1);
 	}
 	if (philo->id % 2 == 0)
-		usleep(philo->data->time_to_eat / 2 * 1000);
+		usleep(philo->data->time_to_eat / 4 * 1000);
 	while (1)
 	{
 		if (philo_eat(philo) == -1)

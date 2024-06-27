@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:08 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/25 18:44:55 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/06/27 14:29:08 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,10 @@ int		death_checker(t_philosopher *philo)
 {
 	pthread_mutex_lock(&philo->data->stop_mut);
 	if (philo->data->stop == 1)
-		return (pthread_mutex_unlock(&philo->data->stop_mut), -1);
+	{
+		pthread_mutex_unlock(&philo->data->stop_mut);
+		return (-1);
+	}
 	pthread_mutex_unlock(&philo->data->stop_mut);
 	return (0);
 }
@@ -46,7 +49,7 @@ void	ft_usleep_check(t_philosopher *philo, int time)
     while ((get_timestamp() - start_time) < time)
     {
 		if (death_checker(philo) == -1)
-			break ;
+			return ;
         time_to_wait = ((time - (get_timestamp() - start_time)) * 1000) / 2;
         if (time_to_wait > 50)
             usleep(50);
@@ -59,10 +62,6 @@ int	write_status(t_philosopher *philo, char *status)
 {
 	if (death_checker(philo) == -1)
 		return (-1);
-	pthread_mutex_lock(&philo->data->stop_mut);
-	if (philo->data->stop == 1)
-		return (pthread_mutex_unlock(&philo->data->stop_mut), -1);
-	pthread_mutex_unlock(&philo->data->stop_mut);
 	pthread_mutex_lock(&philo->data->print);
 	printf ("%ld %d %s\n", (get_timestamp() - philo->data->starting_time), philo->id, status);
 	pthread_mutex_unlock(&philo->data->print);
@@ -79,13 +78,15 @@ long	get_timestamp(void)
 
 int	check_nb_meals(t_data *data, t_philosopher *philo)
 {
-	pthread_mutex_lock(&data->meals);
+	//pthread_mutex_lock(&data->meals);
+	pthread_mutex_lock(&philo->data->eat_time_mut);
 	if (data->number_of_meals != -1 && \
 	philo->meals_eaten >= data->number_of_meals)
 		data->max_meal = 1;
 	else
 		data->max_meal = 0;
-	pthread_mutex_unlock(&data->meals);
+	pthread_mutex_unlock(&philo->data->eat_time_mut);
+	//pthread_mutex_unlock(&data->meals);
 	return (0);
 }
 
