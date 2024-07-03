@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:12 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/27 13:27:21 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/03 13:39:38 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ typedef struct s_data
 	long				time_to_eat;
 	long				time_to_sleep;
 	long				starting_time;
-	int					number_of_philosophers;
 	int					number_of_meals;
+	int					number_of_philosophers;
 	int					start;
 	int					stop;
 	int					max_meal;
@@ -63,6 +63,7 @@ int		init_one_philo(t_philosopher **philo, t_data *data, int i);
 int		init_philosophers(t_data *data, t_philosopher **philo);
 int		data_init(int argc, char **argv, t_data *data);
 void	ft_clean(t_data *data, t_philosopher **philo);
-void    ft_usleep(int time);
+void	ft_usleep(int time);
 void	ft_usleep_check(t_philosopher *philo, int time);
 int		death_checker(t_philosopher *philo);
+void	p_error(char *str);

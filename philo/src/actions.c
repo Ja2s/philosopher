@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/06/28 15:02:48 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/03 15:13:23 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,10 +78,10 @@ int	philo_eat(t_philosopher *philo)
 					eating(philo);
 					return (0);
 				}
-				usleep (1000);
+				usleep (150);
 			}
 		}
-		usleep (1000);
+		usleep (150);
 	}
 	return (0);
 }
@@ -93,20 +93,11 @@ int	philo_sleep(t_philosopher *philo)
 	if (death_checker(philo) == -1)
 		return (-1);
 	ft_usleep_check(philo, philo->data->time_to_sleep);
-	//usleep(philo->data->time_to_sleep * 1000);
-	// ft_usleep_check(philo, 1);
-	//usleep(philo->data->time_to_die - (get_timestamp() - philo->last_meal) - 1000);
 	return (0);
 }
 
-void	*philo_routine(void *arg)
+void	waiting_room(t_philosopher *philo)
 {
-	t_philosopher	*philo;
-
-	long time_eat;
-	philo = (t_philosopher *)arg;
-	
-	time_eat = (philo->data->time_to_eat / 2) * 1000;
 	while (1)
 	{
 		pthread_mutex_lock(&philo->data->start_mut);
@@ -119,8 +110,18 @@ void	*philo_routine(void *arg)
 			break ;
 		}
 		pthread_mutex_unlock(&philo->data->start_mut);
-		usleep (1000);
+		usleep (150);
 	}
+}
+
+void	*philo_routine(void *arg)
+{
+	t_philosopher	*philo;
+	long			time_eat;
+
+	philo = (t_philosopher *)arg;
+	time_eat = (philo->data->time_to_eat / 2) * 1000;
+	waiting_room(philo);
 	if (philo->id % 2 == 0)
 		usleep(time_eat);
 	while (1)
@@ -134,7 +135,6 @@ void	*philo_routine(void *arg)
 		if (death_checker(philo) == -1)
 			return (NULL);
 		usleep(150);
-		usleep (1000);
 	}
 	return (NULL);
 }
