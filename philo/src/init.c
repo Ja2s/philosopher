@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:18:36 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/03 16:44:55 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/04 15:26:11 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,22 +41,6 @@ void	right_fork_init(t_data *data, t_philosopher **philo)
 	}
 }
 
-int	thread_launcher(t_data *data, t_philosopher **philo)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->number_of_philosophers)
-	{
-		(*philo)[i].last_meal = get_timestamp();
-		if (pthread_create(&((*philo)[i].thread), NULL, \
-		philo_routine, &((*philo)[i])) != 0)
-			return (ft_clean(data, philo), -1);
-		i++;
-	}
-	return (0);
-}
-
 int	init_philosophers(t_data *data, t_philosopher **philo)
 {
 	int	i;
@@ -78,23 +62,6 @@ int	init_philosophers(t_data *data, t_philosopher **philo)
 	pthread_mutex_lock(&data->start_mut);
 	data->start = 1;
 	pthread_mutex_unlock(&data->start_mut);
-	return (0);
-}
-
-int	mutex_initializer(t_data *data)
-{
-	if (pthread_mutex_init(&data->print, NULL) != 0)
-		return (-1);
-	if (pthread_mutex_init(&data->time_mut, NULL) != 0)
-		return (-1);
-	if (pthread_mutex_init(&data->stop_mut, NULL) != 0)
-		return (-1);
-	if (pthread_mutex_init(&data->start_mut, NULL) != 0)
-		return (-1);
-	if (pthread_mutex_init(&data->meals, NULL) != 0)
-		return (-1);
-	if (pthread_mutex_init(&data->eat_time_mut, NULL) != 0)
-		return (-1);
 	return (0);
 }
 

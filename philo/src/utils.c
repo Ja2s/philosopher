@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:31:51 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/03 15:27:56 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/04 15:29:10 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,40 +22,6 @@ int	death_checker(t_philosopher *philo)
 	}
 	pthread_mutex_unlock(&philo->data->stop_mut);
 	return (0);
-}
-
-void	ft_usleep(int time)
-{
-	long	start_time;
-	long	time_to_wait;
-
-	start_time = get_timestamp();
-	while ((get_timestamp() - start_time) < time)
-	{
-		time_to_wait = ((time - (get_timestamp() - start_time)) * 1000) / 2;
-		if (time_to_wait > 150)
-			usleep(150);
-		else
-			usleep(time_to_wait);
-	}
-}
-
-void	ft_usleep_check(t_philosopher *philo, int time)
-{
-	long	start_time;
-	long	time_to_wait;
-
-	start_time = get_timestamp();
-	while ((get_timestamp() - start_time) < time)
-	{
-		if (death_checker(philo) == -1)
-			return ;
-		time_to_wait = ((time - (get_timestamp() - start_time)) * 1000) / 2;
-		if (time_to_wait > 150)
-			usleep(150);
-		else
-			usleep(time_to_wait);
-	}
 }
 
 int	write_status(t_philosopher *philo, char *status)

@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/04 13:58:22 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/04 16:45:25 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	eating(t_philosopher *philo)
 int	eat_helper(t_philosopher *philo, int choice)
 {
 	if (choice == 1)
-	{	
+	{
 		pthread_mutex_lock(philo->left_fork);
 		if (philo->left_fork_bool == true)
 		{
@@ -57,7 +57,7 @@ int	eat_helper(t_philosopher *philo, int choice)
 		{
 			pthread_mutex_unlock(philo->right_fork);
 			usleep(150);
-			return (0) ;
+			return (0);
 		}
 	}
 	return (1);
@@ -65,7 +65,7 @@ int	eat_helper(t_philosopher *philo, int choice)
 
 int	philo_eat(t_philosopher *philo)
 {
-	while (usleep (150), 1)
+	while (1)
 	{
 		if (death_checker(philo) == -1)
 			return (-1);
@@ -75,7 +75,7 @@ int	philo_eat(t_philosopher *philo)
 		pthread_mutex_unlock(philo->left_fork);
 		if (write_status(philo, "has take a fork") == -1)
 			return (-1);
-		while (usleep (150), 1)
+		while (1)
 		{
 			if (death_checker(philo) == -1)
 				return (-1);
@@ -87,7 +87,9 @@ int	philo_eat(t_philosopher *philo)
 			if (write_status(philo, "has take a fork") == -1)
 				return (-1);
 			return (eating(philo), 0);
+			usleep (150);
 		}
+		usleep (150);
 	}
 	return (0);
 }
@@ -100,24 +102,6 @@ int	philo_sleep(t_philosopher *philo)
 		return (-1);
 	ft_usleep_check(philo, philo->data->time_to_sleep);
 	return (0);
-}
-
-void	waiting_room(t_philosopher *philo)
-{
-	while (1)
-	{
-		pthread_mutex_lock(&philo->data->start_mut);
-		if (philo->data->start == 1)
-		{
-			pthread_mutex_unlock(&philo->data->start_mut);
-			pthread_mutex_lock(&philo->data->meals);
-			philo->last_meal = get_timestamp();
-			pthread_mutex_unlock(&philo->data->meals);
-			break ;
-		}
-		pthread_mutex_unlock(&philo->data->start_mut);
-		usleep (150);
-	}
 }
 
 void	*philo_routine(void *arg)

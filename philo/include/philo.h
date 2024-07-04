@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:12 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/03 13:39:38 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/04 15:37:18 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,13 @@ int		init_one_philo(t_philosopher **philo, t_data *data, int i);
 int		init_philosophers(t_data *data, t_philosopher **philo);
 int		data_init(int argc, char **argv, t_data *data);
 void	ft_clean(t_data *data, t_philosopher **philo);
-void	ft_usleep(int time);
 void	ft_usleep_check(t_philosopher *philo, int time);
 int		death_checker(t_philosopher *philo);
 void	p_error(char *str);
+int		mutex_initializer(t_data *data);
+void	program_stopper(t_philosopher *philo, t_data *data);
+int		parser(t_data *data);
+void	waiting_room(t_philosopher *philo);
+int		end_checker(t_data *data, t_philosopher *philo, int i);
+int		ft_strlen(char *str);
+int		thread_launcher(t_data *data, t_philosopher **philo);
