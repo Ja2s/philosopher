@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/03 15:13:23 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/04 13:58:22 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,49 +39,55 @@ int	eating(t_philosopher *philo)
 	return (0);
 }
 
-int	philo_eat(t_philosopher *philo)
+int	eat_helper(t_philosopher *philo, int choice)
 {
-	while (1)
-	{
-		if (death_checker(philo) == -1)
-			return (-1);
+	if (choice == 1)
+	{	
 		pthread_mutex_lock(philo->left_fork);
 		if (philo->left_fork_bool == true)
 		{
 			pthread_mutex_unlock(philo->left_fork);
 			usleep(150);
-			continue ;
+			return (0);
 		}
-		else
+	}
+	else if (choice == 2)
+	{
+		if (*philo->right_fork_bool == true)
 		{
-			philo->left_fork_bool = true;
-			pthread_mutex_unlock(philo->left_fork);
+			pthread_mutex_unlock(philo->right_fork);
+			usleep(150);
+			return (0) ;
+		}
+	}
+	return (1);
+}
+
+int	philo_eat(t_philosopher *philo)
+{
+	while (usleep (150), 1)
+	{
+		if (death_checker(philo) == -1)
+			return (-1);
+		if (eat_helper(philo, 1) == 0)
+			continue ;
+		philo->left_fork_bool = true;
+		pthread_mutex_unlock(philo->left_fork);
+		if (write_status(philo, "has take a fork") == -1)
+			return (-1);
+		while (usleep (150), 1)
+		{
+			if (death_checker(philo) == -1)
+				return (-1);
+			pthread_mutex_lock(philo->right_fork);
+			if (eat_helper(philo, 2) == 0)
+				continue ;
+			*philo->right_fork_bool = true;
+			pthread_mutex_unlock(philo->right_fork);
 			if (write_status(philo, "has take a fork") == -1)
 				return (-1);
-			while (1)
-			{
-				if (death_checker(philo) == -1)
-					return (-1);
-				pthread_mutex_lock(philo->right_fork);
-				if (*philo->right_fork_bool == true)
-				{
-					pthread_mutex_unlock(philo->right_fork);
-					usleep(150);
-					continue ;
-				}
-				else
-				{
-					*philo->right_fork_bool = true;
-					pthread_mutex_unlock(philo->right_fork);
-					if (write_status(philo, "has take a fork") == -1)
-						return (-1);
-					eating(philo);
-					return (0);
-				}
-				usleep (150);
-			}
+			return (eating(philo), 0);
 		}
-		usleep (150);
 	}
 	return (0);
 }
