@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:31:23 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/15 20:40:46 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/16 15:03:25 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ int	main(int argc, char **argv)
 		{
 			if (end_checker(&data, philo, i) == -1)
 				return (ft_clean(&data, &philo), -1);
+			if (data.max_meal == 0)
+				break ;
 			i++;
 		}
 		if (data.max_meal == 1)

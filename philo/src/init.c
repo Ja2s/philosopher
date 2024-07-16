@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:18:36 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/04 15:26:11 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/16 14:48:18 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int	values_init(char **argv, t_data *data)
 	{
 		data->number_of_meals = atol(argv[5]);
 		if (data->number_of_meals < 0)
-			return (p_error("Error: too few meals\n"), -1);
+			return (p_error("Error: invalid number of meals\n"), -1);
 	}
 	else
 		data->number_of_meals = -1;

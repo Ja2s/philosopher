@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:24:37 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/15 20:43:26 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/16 15:04:34 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int	philo_eat(t_philosopher *philo)
 		if (eat_helper(philo, 1) == 0)
 			continue ;
 		eat_helper(philo, 3);
-		if (write_status(philo, "has take a fork") == -1)
+		if (write_status(philo, "has taken a fork") == -1)
 			return (-1);
 		while (1)
 		{
@@ -88,7 +88,7 @@ int	philo_eat(t_philosopher *philo)
 				continue ;
 			*philo->right_fork_bool = true;
 			pthread_mutex_unlock(philo->right_fork);
-			if (write_status(philo, "has take a fork") == -1)
+			if (write_status(philo, "has taken a fork") == -1)
 				return (-1);
 			return (eating(philo), 0);
 		}
