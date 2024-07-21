@@ -6,7 +6,7 @@
 #    By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/30 16:20:16 by jgavairo          #+#    #+#              #
-#    Updated: 2024/07/04 15:36:38 by jgavairo         ###   ########.fr        #
+#    Updated: 2024/07/21 18:09:17 by jgavairo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,8 @@ SRCS =	$(PATH_SRC)philo.c \
 		$(PATH_SRC)utils_nd.c \
 		$(PATH_SRC)utils_rd.c \
 		$(PATH_SRC)init.c \
-		$(PATH_SRC)actions.c 
+		$(PATH_SRC)actions.c \
+		$(PATH_SRC)libft.c
 OBJS =$(SRCS:.c=.o)
 
 all: $(NAME)

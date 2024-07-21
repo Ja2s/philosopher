@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 15:27:14 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/16 14:48:35 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/21 18:08:49 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,13 @@ int	parser(t_data *data)
 		return (p_error("Error: invalid number of philosophers\n"), -1);
 	if (data->number_of_philosophers <= 0)
 		return (p_error("Error: invalid number of philosophers\n"), -1);
-	if (data->time_to_die >= 2147483647 || data->time_to_die < 0)
+	if (data->time_to_die > 2147483647 || data->time_to_die < 0)
 		return (p_error("Error: invalid time to die\n"), -1);
-	if (data->time_to_eat >= 2147483647 || data->time_to_eat < 0)
+	if (data->time_to_eat > 2147483647 || data->time_to_eat < 0)
 		return (p_error("Error: invalid time to eat\n"), -1);
-	if (data->time_to_sleep >= 2147483647 || data->time_to_sleep < 0)
+	if (data->time_to_sleep > 2147483647 || data->time_to_sleep < 0)
 		return (p_error("Error: invalid time to sleep\n"), -1);
-	if (data->number_of_meals >= 2147483647)
+	if (data->number_of_meals > 2147483647)
 		return (p_error("Error: invalid number of meals\n"), -1);
 	return (0);
 }

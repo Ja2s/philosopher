@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:20:12 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/04 15:37:18 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/21 18:09:41 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,3 +73,4 @@ void	waiting_room(t_philosopher *philo);
 int		end_checker(t_data *data, t_philosopher *philo, int i);
 int		ft_strlen(char *str);
 int		thread_launcher(t_data *data, t_philosopher **philo);
+int		ft_atol(const char *str);

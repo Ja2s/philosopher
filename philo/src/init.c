@@ -6,7 +6,7 @@
 /*   By: jgavairo <jgavairo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 15:18:36 by jgavairo          #+#    #+#             */
-/*   Updated: 2024/07/16 14:48:18 by jgavairo         ###   ########.fr       */
+/*   Updated: 2024/07/21 18:07:45 by jgavairo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,13 @@ int	values_init(char **argv, t_data *data)
 	data->start = 0;
 	data->stop = 0;
 	data->max_meal = 0;
-	data->number_of_philosophers = atoi(argv[1]);
-	data->time_to_die = atol(argv[2]);
-	data->time_to_eat = atol(argv[3]);
-	data->time_to_sleep = atol(argv[4]);
+	data->number_of_philosophers = ft_atol(argv[1]);
+	data->time_to_die = ft_atol(argv[2]);
+	data->time_to_eat = ft_atol(argv[3]);
+	data->time_to_sleep = ft_atol(argv[4]);
 	if (argv[5])
 	{
-		data->number_of_meals = atol(argv[5]);
+		data->number_of_meals = ft_atol(argv[5]);
 		if (data->number_of_meals < 0)
 			return (p_error("Error: invalid number of meals\n"), -1);
 	}
